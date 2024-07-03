@@ -1,5 +1,6 @@
 package org.ecommerce.orderapi.stock.dto;
 
+import org.ecommerce.StockOperationModel;
 import org.ecommerce.orderapi.stock.entity.Stock;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -13,4 +14,6 @@ public interface StockMapper {
 	StockDto toStockDto(Stock stock);
 
 	StockDto.Response toResponse(StockDto stockDto);
+
+	StockOperationModel toOperationModel(Stock stock);
 }

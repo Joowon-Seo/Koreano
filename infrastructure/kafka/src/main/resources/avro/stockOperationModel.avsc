@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "StockOperationModel",
+  "namespace": "org.ecommerce",
+  "fields": [
+    {
+      "name": "productId",
+      "type": ["null", "int"],
+      "default": null
+    },
+    {
+      "name": "total",
+      "type": ["null", "int"],
+      "default": null
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ecommerce.StockOperationModel;
 import org.ecommerce.common.error.CustomException;
 import org.ecommerce.orderapi.order.entity.Order;
 import org.ecommerce.orderapi.order.entity.OrderItem;
@@ -17,7 +18,6 @@ import org.ecommerce.orderapi.order.repository.OrderRepository;
 import org.ecommerce.orderapi.stock.aop.StockLock;
 import org.ecommerce.orderapi.stock.dto.StockDto;
 import org.ecommerce.orderapi.stock.dto.StockMapper;
-import org.ecommerce.orderapi.stock.dto.StockOperationMessage;
 import org.ecommerce.orderapi.stock.entity.Stock;
 import org.ecommerce.orderapi.stock.entity.enumerated.StockOperationResult;
 import org.ecommerce.orderapi.stock.event.StockDecreasedEvent;
@@ -59,7 +59,7 @@ public class StockDomainService {
 		final Map<Integer, Stock> stockMap = getStockMap(productIds);
 
 		final Set<Long> successfulOrderItemIds = new HashSet<>();
-		final List<StockOperationMessage> stockOperationMessages = new ArrayList<>();
+		final List<StockOperationModel> stockOperationMessages = new ArrayList<>();
 		orderItems.forEach(
 				orderItem -> {
 					Stock stock = stockMap.get(orderItem.getProductId());
@@ -72,10 +72,7 @@ public class StockDomainService {
 					if (result.isSuccess()) {
 						successfulOrderItemIds.add(orderItem.getId());
 						stockOperationMessages.add(
-								StockOperationMessage.of(
-										stock.getProductId(),
-										stock.getTotal())
-						);
+								StockMapper.INSTANCE.toOperationModel(stock));
 					}
 				}
 		);

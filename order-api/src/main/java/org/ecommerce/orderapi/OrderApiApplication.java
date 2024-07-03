@@ -7,7 +7,7 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication(scanBasePackages =
-		{"org.ecommerce.common", "org.ecommerce.orderapi"},
+		{"org.ecommerce.common", "org.ecommerce.kafka", "org.ecommerce.orderapi"},
 		nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 @EnableFeignClients
 @EnableAsync
