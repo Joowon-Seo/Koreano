@@ -36,6 +36,16 @@ dependencies {
     implementation "io.confluent:kafka-avro-serializer:7.0.1"
 }
 
+generateAvroJava {
+    source("src/main/resources/avro")
+    include("**/*.avsc")
+    outputDir = file("src/main/generated/model")
+}
+
+avro {
+    outputCharacterEncoding = 'UTF-8'
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
