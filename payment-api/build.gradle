@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation(project(':common'))
-    implementation(project(':redis'))
+    implementation(project(':infrastructure:redis'))
 
     //공통 모듈
     implementation 'org.springframework.boot:spring-boot-starter'
