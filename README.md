@@ -123,6 +123,46 @@
 - Redis (Redisson) 분산 락
 - MySQL (비/낙관적 락 검토 후 제외)
 
+## 실시간 재고 관리
+### 기존 방식
+- **재고 확인**: FeignClient로 MS 간 Internal API 호출
+  
+### 문제점
+- **실시간성 부족**: 호출 시점 재고만 확인, 진행 중 주문 반영 안 됨
+- **비효율성**: 변동 없는 상품도 API 호출로 네트워크 지연 발생
+
+### 해결 방법
+- **Redis Set 활용**:
+    - In-memory DB로 실시간 재고 관리 (가용 재고 = 전체 재고 - 처리 중 재고)
+    - 주문 생성 시 처리 중 재고 증가, 결제 성공 시 전체 재고 감소
+    - Stock-History RDS로 데이터 유실 방지 및 로그 기록
+    
+    ![realtime-stock-management-architechture](https://github.com/user-attachments/assets/8853b7a4-5e39-4663-b4ac-69e848f83313)
+
+### 시나리오 과정
+ - **재고 확인**:
+    - 현재 재고 4개, 처리 중 3개 → 가용 재고 1개 확인
+    - 주문 수량 2개 시 재고 부족 응답
+    
+       ![재고확인](https://github.com/user-attachments/assets/9880b8db-a229-453b-8cbb-aeeb55914559)
+
+- **주문 생성**:
+    - 유효성 검사(회원, 장바구니, 재고) 후 처리 중 재고 1 증가
+    - Stock-History RDS에 로그 기록, Order-Orchestrator로 결제 이벤트 전송
+
+      ![주문생성완료](https://github.com/user-attachments/assets/b1b6a733-92e0-492c-abd4-e3f239e60c51)
+
+- **결제 처리**:
+    - 성공: 처리 중 재고 1 감소, 전체 재고 1 감소, Product RDS 반영
+    - 실패: 처리 중 재고 1 감소, 전체 재고 유지, Stock-History RDS에 로그 기록
+  
+    ![결제완료후](https://github.com/user-attachments/assets/972320b0-3156-4c33-a06a-20df3693f3ce)
+
+
+### 결과
+- 네트워크 지연 감소, 재고 조회 속도 향상
+- 정확한 실시간 재고 반영으로 주문 신뢰도 개선
+
 ## 회고
 
 ### 데이터베이스 설계의 제약
